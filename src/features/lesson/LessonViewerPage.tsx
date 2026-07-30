@@ -1,8 +1,11 @@
 import { Link, useParams } from "react-router-dom";
 import {
   ArrowLeft,
+  Check,
+  CircleCheck,
   Clock,
   FileText,
+  Loader2,
   Pencil,
   Zap,
 } from "lucide-react";
@@ -15,14 +18,25 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
 import { useCurriculum } from "@/data/queries/use-curricula";
 import { useNode, useNodes } from "@/data/queries/use-nodes";
+import {
+  useNodeProgress,
+  useToggleComplete,
+} from "@/data/queries/use-progress";
+import { useWorkspaceStore } from "@/stores/workspace-store";
 
 export function LessonViewerPage() {
   const { curriculumId, nodeId } = useParams();
   const { data: curriculum } = useCurriculum(curriculumId);
   const { data: node, isLoading } = useNode(nodeId);
   const { data: allNodes } = useNodes(curriculumId);
+  const { data: progress } = useNodeProgress(nodeId);
+  const workspaceId = useWorkspaceStore((s) => s.activeWorkspaceId) ?? undefined;
+  const toggle = useToggleComplete(workspaceId);
+
+  const isComplete = progress?.status === "completed";
 
   if (isLoading) {
     return (
@@ -141,6 +155,36 @@ export function LessonViewerPage() {
 
         {/* Metadata rail */}
         <aside className="space-y-4 lg:sticky lg:top-20 lg:self-start">
+          <Card className={cn(isComplete && "border-success/50 bg-success/5")}>
+            <CardContent className="space-y-3 p-4">
+              {isComplete && (
+                <div className="flex items-center gap-1.5 text-sm font-medium text-success">
+                  <CircleCheck className="size-4" /> Completed
+                </div>
+              )}
+              <Button
+                className="w-full"
+                variant={isComplete ? "outline" : "default"}
+                onClick={() =>
+                  node && toggle.mutate({ node, complete: !isComplete })
+                }
+                disabled={toggle.isPending}
+              >
+                {toggle.isPending ? (
+                  <Loader2 className="animate-spin" />
+                ) : (
+                  <Check />
+                )}
+                {isComplete ? "Mark as not done" : "Mark complete"}
+              </Button>
+              {node.xp > 0 && !isComplete && (
+                <p className="text-center text-xs text-muted-foreground">
+                  Earn {node.xp} XP on completion
+                </p>
+              )}
+            </CardContent>
+          </Card>
+
           <Card>
             <CardContent className="space-y-3 p-4 text-sm">
               {node.difficulty && (

@@ -7,7 +7,9 @@ export type TableName =
   | "workspaces"
   | "curricula"
   | "nodes"
-  | "edges";
+  | "edges"
+  | "progress"
+  | "activities";
 
 export interface PersistenceAdapter {
   getAll<T>(table: TableName): Promise<T[]>;

@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/tooltip";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { Section, Swatch } from "@/features/style-guide/components/section";
-import type { Difficulty } from "@/types/curriculum";
+import type { DifficultyLevel } from "@/core/schemas/base";
 
 const semanticColors = [
   { name: "background", className: "bg-background", fg: "text-foreground" },
@@ -63,7 +63,7 @@ const uiTypeScale = [
 ];
 
 const spacing = [1, 2, 3, 4, 6, 8, 12, 16];
-const difficulties: Difficulty[] = [
+const difficulties: DifficultyLevel[] = [
   "beginner",
   "intermediate",
   "advanced",

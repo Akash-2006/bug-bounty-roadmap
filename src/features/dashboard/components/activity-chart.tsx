@@ -8,19 +8,13 @@ import {
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-// Placeholder activity series. Real XP history is wired when progress
-// tracking lands in a later phase.
-const data = [
-  { day: "Mon", xp: 0 },
-  { day: "Tue", xp: 0 },
-  { day: "Wed", xp: 0 },
-  { day: "Thu", xp: 0 },
-  { day: "Fri", xp: 0 },
-  { day: "Sat", xp: 0 },
-  { day: "Sun", xp: 0 },
-];
+interface ActivityChartProps {
+  data: { label: string; xp: number }[];
+}
 
-export function ActivityChart() {
+export function ActivityChart({ data }: ActivityChartProps) {
+  const hasActivity = data.some((d) => d.xp > 0);
+
   return (
     <Card className="h-full">
       <CardHeader>
@@ -45,7 +39,7 @@ export function ActivityChart() {
                 </linearGradient>
               </defs>
               <XAxis
-                dataKey="day"
+                dataKey="label"
                 tickLine={false}
                 axisLine={false}
                 fontSize={12}
@@ -72,7 +66,9 @@ export function ActivityChart() {
           </ResponsiveContainer>
         </div>
         <p className="mt-2 text-center text-xs text-muted-foreground">
-          Complete lessons to start building your streak.
+          {hasActivity
+            ? "XP earned over the last 7 days."
+            : "Complete lessons to start building your streak."}
         </p>
       </CardContent>
     </Card>

@@ -1,8 +1,8 @@
 import Dexie, { type Table } from "dexie";
 
-import { SCHEMA_VERSION } from "@/core/constants";
 import type { Curriculum } from "@/core/schemas/curriculum";
 import type { CurriculumEdge, CurriculumNode } from "@/core/schemas/node";
+import type { Activity, ProgressRecord } from "@/core/schemas/progress";
 import type { Workspace } from "@/core/schemas/workspace";
 
 /**
@@ -15,14 +15,24 @@ export class AppDatabase extends Dexie {
   curricula!: Table<Curriculum, string>;
   nodes!: Table<CurriculumNode, string>;
   edges!: Table<CurriculumEdge, string>;
+  progress!: Table<ProgressRecord, string>;
+  activities!: Table<Activity, string>;
 
   constructor() {
     super("bbu-db");
-    this.version(SCHEMA_VERSION).stores({
+    this.version(1).stores({
       workspaces: "id, updatedAt",
       curricula: "id, workspaceId, slug, order, updatedAt",
       nodes: "id, curriculumId, parentId, [curriculumId+parentId], order, updatedAt",
       edges: "id, curriculumId, fromNodeId, toNodeId, type",
+    });
+    // v2: gamification — progress + append-only activity log (ADR 0010).
+    this.version(2).stores({
+      nodes:
+        "id, curriculumId, workspaceId, parentId, [curriculumId+parentId], order, updatedAt",
+      progress:
+        "id, workspaceId, curriculumId, entityId, [entityType+entityId], updatedAt",
+      activities: "id, workspaceId, curriculumId, entityId, type, at",
     });
   }
 }
