@@ -26,6 +26,7 @@ import {
   useToggleComplete,
 } from "@/data/queries/use-progress";
 import { FlashcardsSection } from "@/features/lesson/components/flashcards-section";
+import { QuizSection } from "@/features/lesson/components/quiz-section";
 import { useWorkspaceStore } from "@/stores/workspace-store";
 
 export function LessonViewerPage() {
@@ -152,6 +153,8 @@ export function LessonViewerPage() {
               </div>
             </section>
           )}
+
+          <QuizSection node={node} />
 
           <FlashcardsSection node={node} />
         </article>
