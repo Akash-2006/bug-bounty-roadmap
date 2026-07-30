@@ -7,10 +7,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCurriculum } from "@/data/queries/use-curricula";
+import { NodeTree } from "@/features/curriculum/components/node-tree";
+import { useWorkspaceStore } from "@/stores/workspace-store";
 
 export function CurriculumOverviewPage() {
   const { curriculumId } = useParams();
   const { data: curriculum, isLoading } = useCurriculum(curriculumId);
+  const workspaceId = useWorkspaceStore((s) => s.activeWorkspaceId) ?? undefined;
 
   if (isLoading) {
     return (
@@ -81,11 +84,7 @@ export function CurriculumOverviewPage() {
         </CardContent>
       </Card>
 
-      <EmptyState
-        icon={Workflow}
-        title="Structure coming next"
-        description="The tree explorer and builder for adding modules, weeks, and lessons ships in the next slice."
-      />
+      <NodeTree curriculum={curriculum} workspaceId={workspaceId} />
     </div>
   );
 }

@@ -17,6 +17,7 @@ export interface PersistenceAdapter {
   put<T>(table: TableName, value: T): Promise<void>;
   bulkPut<T>(table: TableName, values: T[]): Promise<void>;
   delete(table: TableName, id: string): Promise<void>;
+  bulkDelete(table: TableName, ids: string[]): Promise<void>;
   /** Delete all rows of a table whose indexed field equals `value`. */
   deleteWhere(table: TableName, index: string, value: string): Promise<void>;
 }

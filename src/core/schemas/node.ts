@@ -54,3 +54,25 @@ export const edgeSchema = baseEntitySchema.extend({
 });
 
 export type CurriculumEdge = z.infer<typeof edgeSchema>;
+
+/** Payload for creating a node under an optional parent. */
+export const createNodeSchema = z.object({
+  parentId: z.string().min(1).nullable(),
+  levelKey: z.string().min(1),
+  title: z.string().min(1, "Give it a title").max(200),
+  summary: z.string().max(600).optional(),
+});
+export type CreateNodeInput = z.infer<typeof createNodeSchema>;
+
+/** Payload for updating a node's editable fields. */
+export const updateNodeSchema = z.object({
+  title: z.string().min(1).max(200).optional(),
+  summary: z.string().max(600).optional(),
+  body: z.string().optional(),
+  difficulty: difficultySchema.optional(),
+  estimatedMinutes: z.number().int().nonnegative().optional(),
+  xp: z.number().int().nonnegative().optional(),
+  tags: z.array(z.string()).optional(),
+  objectives: z.array(z.string()).optional(),
+});
+export type UpdateNodeInput = z.infer<typeof updateNodeSchema>;
