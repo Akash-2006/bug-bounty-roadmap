@@ -5,13 +5,30 @@ import {
   CircleCheck,
   FileText,
   FolderTree,
+  GripVertical,
   MoreVertical,
   Pencil,
   Plus,
   Trash2,
 } from "lucide-react";
+import {
+  DndContext,
+  PointerSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  arrayMove,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 import { buildTree, canHaveChildren, childLevelKey } from "@/core/tree";
+import { compareOrder, orderBetween } from "@/core/ordering";
 import type { Curriculum } from "@/core/schemas/curriculum";
 import type { HierarchyScheme } from "@/core/schemas/hierarchy";
 import type { CurriculumNode } from "@/core/schemas/node";
@@ -32,6 +49,7 @@ import {
   useDeleteNode,
   useNodes,
   useReorderNode,
+  useSetNodeOrder,
   useUpdateNode,
 } from "@/data/queries/use-nodes";
 import { useWorkspaceProgress } from "@/data/queries/use-progress";
@@ -68,7 +86,12 @@ export function NodeTree({ curriculum, workspaceId }: NodeTreeProps) {
   const create = useCreateNode(workspaceId, curriculum.id);
   const update = useUpdateNode(curriculum.id);
   const reorder = useReorderNode(curriculum.id);
+  const setOrder = useSetNodeOrder(curriculum.id);
   const remove = useDeleteNode(curriculum.id);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
+  );
 
   const completedIds = new Set(
     (progress ?? [])
@@ -81,7 +104,35 @@ export function NodeTree({ curriculum, workspaceId }: NodeTreeProps) {
 
   const scheme = curriculum.scheme;
   const rootLevel = scheme.levels[0];
-  const tree = buildTree(nodes ?? []);
+  const allNodes = nodes ?? [];
+  const tree = buildTree(allNodes);
+
+  /** Reorder within a sibling group via fractional indexing (no re-parenting). */
+  function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    const byId = new Map(allNodes.map((n) => [n.id, n]));
+    const a = byId.get(String(active.id));
+    const o = byId.get(String(over.id));
+    if (!a || !o || a.parentId !== o.parentId) return;
+
+    const siblings = allNodes
+      .filter((n) => n.parentId === a.parentId)
+      .sort((x, y) => compareOrder(x.order, y.order))
+      .map((n) => n.id);
+    const oldIndex = siblings.indexOf(a.id);
+    const newIndex = siblings.indexOf(o.id);
+    if (oldIndex < 0 || newIndex < 0) return;
+
+    const reordered = arrayMove(siblings, oldIndex, newIndex);
+    const pos = reordered.indexOf(a.id);
+    const prev = pos > 0 ? byId.get(reordered[pos - 1])?.order ?? null : null;
+    const next =
+      pos < reordered.length - 1
+        ? byId.get(reordered[pos + 1])?.order ?? null
+        : null;
+    setOrder.mutate({ id: a.id, order: orderBetween(prev, next) });
+  }
 
   async function handleSubmit(values: NodeFormValues) {
     if (!dialog) return;
@@ -161,25 +212,36 @@ export function NodeTree({ curriculum, workspaceId }: NodeTreeProps) {
           }
         />
       ) : (
-        <div className="rounded-xl border bg-card p-2">
-          {tree.map((item, i) => (
-            <NodeTreeItem
-              key={item.node.id}
-              treeNode={item}
-              scheme={scheme}
-              curriculumId={curriculum.id}
-              completedIds={completedIds}
-              siblingCount={tree.length}
-              index={i}
-              onAddChild={openAddChild}
-              onRename={(node) => setDialog({ mode: "rename", node })}
-              onDelete={(node) => setDeleteTarget(node)}
-              onReorder={(id, direction) =>
-                reorder.mutate({ id, direction })
-              }
-            />
-          ))}
-        </div>
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <div className="rounded-xl border bg-card p-2">
+            <SortableContext
+              items={tree.map((t) => t.node.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              {tree.map((item, i) => (
+                <NodeTreeItem
+                  key={item.node.id}
+                  treeNode={item}
+                  scheme={scheme}
+                  curriculumId={curriculum.id}
+                  completedIds={completedIds}
+                  siblingCount={tree.length}
+                  index={i}
+                  onAddChild={openAddChild}
+                  onRename={(node) => setDialog({ mode: "rename", node })}
+                  onDelete={(node) => setDeleteTarget(node)}
+                  onReorder={(id, direction) =>
+                    reorder.mutate({ id, direction })
+                  }
+                />
+              ))}
+            </SortableContext>
+          </div>
+        </DndContext>
       )}
 
       {/* Add / rename dialog */}
@@ -267,6 +329,19 @@ function NodeTreeItem({
   const { node, depth, children } = treeNode;
   const [expanded, setExpanded] = useState(true);
 
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: node.id });
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
   const hasChildren = children.length > 0;
   const allowsChildren = canHaveChildren(scheme, node.levelKey);
   const label = levelLabel(scheme, node.levelKey);
@@ -274,11 +349,23 @@ function NodeTreeItem({
   const isLeaf = !allowsChildren;
 
   return (
-    <div>
+    <div ref={setNodeRef} style={style} className={cn(isDragging && "z-10")}>
       <div
-        className="group flex items-center gap-1.5 rounded-lg px-2 py-1.5 hover:bg-accent/50"
-        style={{ paddingLeft: `${depth * 20 + 8}px` }}
+        className={cn(
+          "group flex items-center gap-1 rounded-lg px-2 py-1.5 hover:bg-accent/50",
+          isDragging && "bg-accent shadow-sm",
+        )}
+        style={{ paddingLeft: `${depth * 20 + 4}px` }}
       >
+        <button
+          type="button"
+          {...attributes}
+          {...listeners}
+          className="flex size-5 shrink-0 cursor-grab touch-none items-center justify-center rounded text-muted-foreground/50 opacity-0 hover:text-muted-foreground group-hover:opacity-100 active:cursor-grabbing"
+          aria-label="Drag to reorder"
+        >
+          <GripVertical className="size-4" />
+        </button>
         <button
           type="button"
           onClick={() => hasChildren && setExpanded((v) => !v)}
@@ -365,21 +452,26 @@ function NodeTreeItem({
 
       {hasChildren && expanded && (
         <div>
-          {children.map((child, i) => (
-            <NodeTreeItem
-              key={child.node.id}
-              treeNode={child}
-              scheme={scheme}
-              curriculumId={curriculumId}
-              completedIds={completedIds}
-              siblingCount={children.length}
-              index={i}
-              onAddChild={onAddChild}
-              onRename={onRename}
-              onDelete={onDelete}
-              onReorder={onReorder}
-            />
-          ))}
+          <SortableContext
+            items={children.map((c) => c.node.id)}
+            strategy={verticalListSortingStrategy}
+          >
+            {children.map((child, i) => (
+              <NodeTreeItem
+                key={child.node.id}
+                treeNode={child}
+                scheme={scheme}
+                curriculumId={curriculumId}
+                completedIds={completedIds}
+                siblingCount={children.length}
+                index={i}
+                onAddChild={onAddChild}
+                onRename={onRename}
+                onDelete={onDelete}
+                onReorder={onReorder}
+              />
+            ))}
+          </SortableContext>
         </div>
       )}
     </div>

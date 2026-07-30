@@ -101,4 +101,13 @@ export const nodeService = {
   async remove(curriculumId: string, id: string): Promise<void> {
     await nodeRepo.removeSubtree(curriculumId, id);
   },
+
+  /** Set an explicit fractional order key (used by drag-and-drop). */
+  async setOrder(id: string, order: string): Promise<void> {
+    const node = await nodeRepo.get(id);
+    if (!node) return;
+    node.order = order;
+    node.updatedAt = Date.now();
+    await nodeRepo.save(node);
+  },
 };

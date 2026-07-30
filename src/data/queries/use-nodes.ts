@@ -61,6 +61,15 @@ export function useReorderNode(curriculumId: string | undefined) {
   });
 }
 
+export function useSetNodeOrder(curriculumId: string | undefined) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, order }: { id: string; order: string }) =>
+      nodeService.setOrder(id, order),
+    onSuccess: () => invalidate(qc, curriculumId),
+  });
+}
+
 export function useDeleteNode(curriculumId: string | undefined) {
   const qc = useQueryClient();
   return useMutation({
