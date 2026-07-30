@@ -116,9 +116,7 @@ export const statsService = {
       }
     }
 
-    const xp = activities
-      .filter((a) => a.type === "node.completed")
-      .reduce((sum, a) => sum + a.xp, 0);
+    const xp = activities.reduce((sum, a) => sum + (a.xp ?? 0), 0);
 
     const recent: RecentActivity[] = activities
       .slice()

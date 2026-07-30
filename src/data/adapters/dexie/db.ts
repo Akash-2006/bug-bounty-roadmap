@@ -4,6 +4,7 @@ import type { Curriculum } from "@/core/schemas/curriculum";
 import type { Flashcard } from "@/core/schemas/flashcard";
 import type { CurriculumEdge, CurriculumNode } from "@/core/schemas/node";
 import type { Activity, ProgressRecord } from "@/core/schemas/progress";
+import type { QuizQuestion } from "@/core/schemas/quiz";
 import type { Workspace } from "@/core/schemas/workspace";
 
 /**
@@ -19,6 +20,7 @@ export class AppDatabase extends Dexie {
   progress!: Table<ProgressRecord, string>;
   activities!: Table<Activity, string>;
   flashcards!: Table<Flashcard, string>;
+  quizQuestions!: Table<QuizQuestion, string>;
 
   constructor() {
     super("bbu-db");
@@ -39,6 +41,11 @@ export class AppDatabase extends Dexie {
     // v3: flashcards with spaced-repetition scheduling.
     this.version(3).stores({
       flashcards: "id, workspaceId, curriculumId, nodeId, dueAt, updatedAt",
+    });
+    // v4: multiple-choice quiz questions.
+    this.version(4).stores({
+      quizQuestions:
+        "id, workspaceId, curriculumId, nodeId, order, updatedAt",
     });
   }
 }

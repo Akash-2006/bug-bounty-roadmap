@@ -10,7 +10,8 @@ export type TableName =
   | "edges"
   | "progress"
   | "activities"
-  | "flashcards";
+  | "flashcards"
+  | "quizQuestions";
 
 export interface PersistenceAdapter {
   getAll<T>(table: TableName): Promise<T[]>;

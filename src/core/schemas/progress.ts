@@ -32,6 +32,7 @@ export type ProgressRecord = z.infer<typeof progressSchema>;
 export const activityTypeSchema = z.enum([
   "node.completed",
   "node.uncompleted",
+  "quiz.passed",
 ]);
 export type ActivityType = z.infer<typeof activityTypeSchema>;
 
