@@ -34,7 +34,7 @@ export const navSections: NavSection[] = [
     items: [
       { label: "Dashboard", to: "/", icon: LayoutDashboard },
       { label: "Curricula", to: "/curricula", icon: BookOpen },
-      { label: "Search", to: "/search", icon: Search, upcoming: true },
+      { label: "Search", to: "/search", icon: Search },
     ],
   },
   {
