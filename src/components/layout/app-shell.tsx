@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Topbar } from "@/components/layout/topbar";
 import { cn } from "@/lib/utils";
+import { useBootstrap } from "@/hooks/use-bootstrap";
 import { useUIStore } from "@/stores/ui-store";
 
 export function AppShell() {
@@ -13,6 +14,9 @@ export function AppShell() {
   const mobileOpen = useUIStore((s) => s.mobileSidebarOpen);
   const setMobileSidebarOpen = useUIStore((s) => s.setMobileSidebarOpen);
   const location = useLocation();
+
+  // Ensure a default workspace exists and is selected on first launch.
+  useBootstrap();
 
   // Close the mobile drawer whenever the route changes.
   useEffect(() => {

@@ -3,6 +3,8 @@ import { createBrowserRouter } from "react-router-dom";
 import { AppShell } from "@/components/layout/app-shell";
 import { PlaceholderPage } from "@/components/common/placeholder-page";
 import { DashboardPage } from "@/features/dashboard/DashboardPage";
+import { CurriculaPage } from "@/features/curriculum/CurriculaPage";
+import { CurriculumOverviewPage } from "@/features/curriculum/CurriculumOverviewPage";
 import { NotFoundPage } from "@/features/errors/NotFoundPage";
 import { StyleGuidePage } from "@/features/style-guide/StyleGuidePage";
 
@@ -18,6 +20,8 @@ export const router = createBrowserRouter([
     errorElement: <NotFoundPage />,
     children: [
       { index: true, element: <DashboardPage /> },
+      { path: "curricula", element: <CurriculaPage /> },
+      { path: "curricula/:curriculumId", element: <CurriculumOverviewPage /> },
       {
         path: "learn",
         element: (
