@@ -127,10 +127,6 @@ export const router = createBrowserRouter([
         element: <SearchPage />,
       },
       {
-        path: "labs",
-        element: <PlaceholderPage title="Labs" />,
-      },
-      {
         path: "assignments",
         element: <AssignmentsPage />,
       },

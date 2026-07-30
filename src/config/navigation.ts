@@ -4,7 +4,6 @@ import {
   Bookmark,
   Brain,
   ClipboardList,
-  FlaskConical,
   LayoutDashboard,
   NotebookPen,
   Palette,
@@ -48,7 +47,6 @@ export const navSections: NavSection[] = [
         to: "/assignments",
         icon: ClipboardList,
       },
-      { label: "Labs", to: "/labs", icon: FlaskConical, upcoming: true },
     ],
   },
   {
