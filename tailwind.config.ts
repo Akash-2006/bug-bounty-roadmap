@@ -55,6 +55,20 @@ const config: Config = {
           DEFAULT: "hsl(var(--warning))",
           foreground: "hsl(var(--warning-foreground))",
         },
+        info: {
+          DEFAULT: "hsl(var(--info))",
+          foreground: "hsl(var(--info-foreground))",
+        },
+        difficulty: {
+          beginner: "hsl(var(--difficulty-beginner))",
+          intermediate: "hsl(var(--difficulty-intermediate))",
+          advanced: "hsl(var(--difficulty-advanced))",
+          expert: "hsl(var(--difficulty-expert))",
+        },
+        graph: {
+          node: "hsl(var(--graph-node))",
+          edge: "hsl(var(--graph-edge))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -64,6 +78,7 @@ const config: Config = {
       fontFamily: {
         sans: ["Inter", "ui-sans-serif", "system-ui", "sans-serif"],
         mono: ["JetBrains Mono", "ui-monospace", "SFMono-Regular", "monospace"],
+        reading: ["Lora", "Georgia", "ui-serif", "serif"],
       },
       keyframes: {
         "accordion-down": {

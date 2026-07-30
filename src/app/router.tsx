@@ -4,6 +4,7 @@ import { AppShell } from "@/components/layout/app-shell";
 import { PlaceholderPage } from "@/components/common/placeholder-page";
 import { DashboardPage } from "@/features/dashboard/DashboardPage";
 import { NotFoundPage } from "@/features/errors/NotFoundPage";
+import { StyleGuidePage } from "@/features/style-guide/StyleGuidePage";
 
 /**
  * Application routes. `AppShell` is the layout route wrapping every page.
@@ -55,6 +56,9 @@ export const router = createBrowserRouter([
         path: "achievements",
         element: <PlaceholderPage title="Achievements" />,
       },
+      ...(import.meta.env.DEV
+        ? [{ path: "style-guide", element: <StyleGuidePage /> }]
+        : []),
       { path: "*", element: <NotFoundPage /> },
     ],
   },
