@@ -1,5 +1,5 @@
 import { Link, useParams } from "react-router-dom";
-import { ArrowLeft, Layers, Workflow } from "lucide-react";
+import { ArrowLeft, Download, Layers, Loader2, Workflow } from "lucide-react";
 
 import { EmptyState } from "@/components/common/empty-state";
 import { Badge } from "@/components/ui/badge";
@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCurriculum } from "@/data/queries/use-curricula";
+import { useExportCurriculumMarkdown } from "@/data/queries/use-io";
 import { NodeTree } from "@/features/curriculum/components/node-tree";
 import { useWorkspaceStore } from "@/stores/workspace-store";
 
@@ -14,6 +15,7 @@ export function CurriculumOverviewPage() {
   const { curriculumId } = useParams();
   const { data: curriculum, isLoading } = useCurriculum(curriculumId);
   const workspaceId = useWorkspaceStore((s) => s.activeWorkspaceId) ?? undefined;
+  const exportMd = useExportCurriculumMarkdown();
 
   if (isLoading) {
     return (
@@ -58,11 +60,24 @@ export function CurriculumOverviewPage() {
         {curriculum.summary && (
           <p className="max-w-2xl text-muted-foreground">{curriculum.summary}</p>
         )}
-        <div className="flex items-center gap-2 pt-1">
+        <div className="flex flex-wrap items-center gap-2 pt-1">
           <Badge variant="secondary" className="gap-1">
             <Layers className="size-3" />
             {curriculum.scheme.name}
           </Badge>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => exportMd.mutate(curriculum.id)}
+            disabled={exportMd.isPending}
+          >
+            {exportMd.isPending ? (
+              <Loader2 className="animate-spin" />
+            ) : (
+              <Download />
+            )}
+            Export Markdown
+          </Button>
         </div>
       </header>
 
