@@ -40,6 +40,10 @@ export class DexieAdapter implements PersistenceAdapter {
     await this.table(table).delete(id);
   }
 
+  async bulkDelete(table: TableName, ids: string[]): Promise<void> {
+    await this.table(table).bulkDelete(ids);
+  }
+
   async deleteWhere(
     table: TableName,
     index: string,
