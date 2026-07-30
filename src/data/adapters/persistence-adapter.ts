@@ -11,7 +11,9 @@ export type TableName =
   | "progress"
   | "activities"
   | "flashcards"
-  | "quizQuestions";
+  | "quizQuestions"
+  | "bookmarks"
+  | "notes";
 
 export interface PersistenceAdapter {
   getAll<T>(table: TableName): Promise<T[]>;
