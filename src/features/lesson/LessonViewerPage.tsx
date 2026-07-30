@@ -1,6 +1,7 @@
 import { Link, useParams } from "react-router-dom";
 import {
   ArrowLeft,
+  Bookmark,
   Check,
   CircleCheck,
   Clock,
@@ -25,7 +26,12 @@ import {
   useNodeProgress,
   useToggleComplete,
 } from "@/data/queries/use-progress";
+import {
+  useNodeBookmark,
+  useToggleBookmark,
+} from "@/data/queries/use-annotations";
 import { FlashcardsSection } from "@/features/lesson/components/flashcards-section";
+import { NoteCard } from "@/features/lesson/components/note-card";
 import { QuizSection } from "@/features/lesson/components/quiz-section";
 import { useWorkspaceStore } from "@/stores/workspace-store";
 
@@ -35,10 +41,13 @@ export function LessonViewerPage() {
   const { data: node, isLoading } = useNode(nodeId);
   const { data: allNodes } = useNodes(curriculumId);
   const { data: progress } = useNodeProgress(nodeId);
+  const { data: bookmark } = useNodeBookmark(nodeId);
   const workspaceId = useWorkspaceStore((s) => s.activeWorkspaceId) ?? undefined;
   const toggle = useToggleComplete(workspaceId);
+  const toggleBookmark = useToggleBookmark(node);
 
   const isComplete = progress?.status === "completed";
+  const isBookmarked = Boolean(bookmark);
 
   if (isLoading) {
     return (
@@ -83,11 +92,21 @@ export function LessonViewerPage() {
             <ArrowLeft /> {curriculum?.title ?? "Curriculum"}
           </Link>
         </Button>
-        <Button asChild>
-          <Link to={editHref}>
-            <Pencil /> Edit
-          </Link>
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant={isBookmarked ? "default" : "outline"}
+            size="icon"
+            onClick={() => toggleBookmark.mutate()}
+            aria-label={isBookmarked ? "Remove bookmark" : "Bookmark"}
+          >
+            <Bookmark className={cn(isBookmarked && "fill-current")} />
+          </Button>
+          <Button asChild>
+            <Link to={editHref}>
+              <Pencil /> Edit
+            </Link>
+          </Button>
+        </div>
       </div>
 
       <div className="grid gap-8 lg:grid-cols-[1fr_260px]">
@@ -230,6 +249,8 @@ export function LessonViewerPage() {
               </CardContent>
             </Card>
           )}
+
+          <NoteCard node={node} />
         </aside>
       </div>
     </div>

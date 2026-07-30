@@ -67,6 +67,16 @@ const AchievementsPage = lazy(() =>
     default: m.AchievementsPage,
   })),
 );
+const BookmarksPage = lazy(() =>
+  import("@/features/annotations/BookmarksPage").then((m) => ({
+    default: m.BookmarksPage,
+  })),
+);
+const NotesPage = lazy(() =>
+  import("@/features/annotations/NotesPage").then((m) => ({
+    default: m.NotesPage,
+  })),
+);
 
 /**
  * Application routes. `AppShell` is the layout route wrapping every page.
@@ -122,11 +132,11 @@ export const router = createBrowserRouter([
       { path: "review", element: <ReviewPage /> },
       {
         path: "bookmarks",
-        element: <PlaceholderPage title="Bookmarks" />,
+        element: <BookmarksPage />,
       },
       {
         path: "notes",
-        element: <PlaceholderPage title="Notes" />,
+        element: <NotesPage />,
       },
       {
         path: "achievements",
