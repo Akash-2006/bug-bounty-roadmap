@@ -4,6 +4,7 @@ import {
   Bookmark,
   Brain,
   ClipboardList,
+  Compass,
   LayoutDashboard,
   NotebookPen,
   Palette,
@@ -11,6 +12,8 @@ import {
   Settings,
   Trophy,
 } from "lucide-react";
+
+import { isSupabaseConfigured } from "@/lib/supabase";
 
 export interface NavItem {
   label: string;
@@ -35,6 +38,10 @@ export const navSections: NavSection[] = [
     items: [
       { label: "Dashboard", to: "/", icon: LayoutDashboard },
       { label: "Curricula", to: "/curricula", icon: BookOpen },
+      // Community sharing is a cloud-only feature.
+      ...(isSupabaseConfigured
+        ? [{ label: "Explore", to: "/explore", icon: Compass }]
+        : []),
       { label: "Search", to: "/search", icon: Search },
     ],
   },

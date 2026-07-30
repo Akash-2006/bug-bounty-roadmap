@@ -16,6 +16,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useCurriculum } from "@/data/queries/use-curricula";
 import { useExportCurriculumMarkdown } from "@/data/queries/use-io";
 import { NodeTree } from "@/features/curriculum/components/node-tree";
+import { ShareButton } from "@/features/curriculum/components/share-button";
 import { useWorkspaceStore } from "@/stores/workspace-store";
 
 export function CurriculumOverviewPage() {
@@ -77,6 +78,7 @@ export function CurriculumOverviewPage() {
               <Network /> Graph
             </Link>
           </Button>
+          <ShareButton curriculumId={curriculum.id} />
           <Button
             variant="outline"
             size="sm"

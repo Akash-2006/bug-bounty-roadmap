@@ -44,3 +44,35 @@ begin
     execute format($ix$create index if not exists %I on public.%I ((doc->>'workspaceId'))$ix$, t || '_ws_idx', t);
   end loop;
 end $$;
+
+-- ---------------------------------------------------------------------------
+-- Community sharing: publish a curriculum so ANY signed-in user can browse and
+-- clone it. Rows are publicly readable; only the author can write/delete.
+-- ---------------------------------------------------------------------------
+create table if not exists public.published_curricula (
+  id text primary key,
+  author_id uuid not null default auth.uid() references auth.users(id) on delete cascade,
+  author_email text,
+  source_curriculum_id text,
+  title text not null,
+  summary text,
+  doc jsonb not null,
+  created_at timestamptz not null default now()
+);
+
+alter table public.published_curricula enable row level security;
+
+drop policy if exists "pub_read" on public.published_curricula;
+create policy "pub_read" on public.published_curricula for select using (true);
+
+drop policy if exists "pub_insert" on public.published_curricula;
+create policy "pub_insert" on public.published_curricula for insert with check (author_id = auth.uid());
+
+drop policy if exists "pub_update" on public.published_curricula;
+create policy "pub_update" on public.published_curricula for update using (author_id = auth.uid()) with check (author_id = auth.uid());
+
+drop policy if exists "pub_delete" on public.published_curricula;
+create policy "pub_delete" on public.published_curricula for delete using (author_id = auth.uid());
+
+create index if not exists pub_source_idx on public.published_curricula (source_curriculum_id);
+create index if not exists pub_author_idx on public.published_curricula (author_id);
