@@ -6,6 +6,7 @@ import {
   FlaskConical,
   LayoutDashboard,
   NotebookPen,
+  Palette,
   Search,
   Trophy,
 } from "lucide-react";
@@ -56,4 +57,15 @@ export const navSections: NavSection[] = [
       { label: "Achievements", to: "/achievements", icon: Trophy, upcoming: true },
     ],
   },
+  // Dev-only tools, shown only in development builds.
+  ...(import.meta.env.DEV
+    ? [
+        {
+          heading: "Developer",
+          items: [
+            { label: "Style Guide", to: "/style-guide", icon: Palette },
+          ],
+        },
+      ]
+    : []),
 ];
