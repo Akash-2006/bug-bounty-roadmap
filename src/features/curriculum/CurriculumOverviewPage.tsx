@@ -1,5 +1,12 @@
 import { Link, useParams } from "react-router-dom";
-import { ArrowLeft, Download, Layers, Loader2, Workflow } from "lucide-react";
+import {
+  ArrowLeft,
+  Download,
+  Layers,
+  Loader2,
+  Network,
+  Workflow,
+} from "lucide-react";
 
 import { EmptyState } from "@/components/common/empty-state";
 import { Badge } from "@/components/ui/badge";
@@ -65,6 +72,11 @@ export function CurriculumOverviewPage() {
             <Layers className="size-3" />
             {curriculum.scheme.name}
           </Badge>
+          <Button variant="outline" size="sm" asChild>
+            <Link to={`/curricula/${curriculum.id}/graph`}>
+              <Network /> Graph
+            </Link>
+          </Button>
           <Button
             variant="outline"
             size="sm"
