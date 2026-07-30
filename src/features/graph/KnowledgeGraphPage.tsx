@@ -213,7 +213,7 @@ export function KnowledgeGraphPage() {
         <MiniMap
           pannable
           zoomable
-          className="!rounded-lg !border !bg-card"
+          className="!hidden !rounded-lg !border !bg-card sm:!block"
           nodeColor="hsl(var(--primary))"
         />
         <Panel position="top-left">
@@ -226,7 +226,7 @@ export function KnowledgeGraphPage() {
           </div>
         </Panel>
         <Panel position="top-right">
-          <div className="space-y-1 rounded-lg border bg-card/90 p-3 text-xs shadow-sm backdrop-blur">
+          <div className="hidden max-w-[240px] space-y-1 rounded-lg border bg-card/90 p-3 text-xs shadow-sm backdrop-blur sm:block">
             <p className="font-medium">Knowledge graph</p>
             <p className="text-muted-foreground">
               Drag a node's right dot to another to add a prerequisite.

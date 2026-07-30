@@ -1,10 +1,12 @@
 import { GraduationCap, Library } from "lucide-react";
 
 import { EmptyState } from "@/components/common/empty-state";
+import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCurricula } from "@/data/queries/use-curricula";
 import { CreateCurriculumDialog } from "@/features/curriculum/components/create-curriculum-dialog";
 import { CurriculumCard } from "@/features/curriculum/components/curriculum-card";
+import { TemplateGallery } from "@/features/curriculum/components/template-gallery";
 import { useWorkspaceStore } from "@/stores/workspace-store";
 
 export function CurriculaPage() {
@@ -53,6 +55,9 @@ export function CurriculaPage() {
           <GraduationCap />
         </div>
       )}
+
+      <Separator className="my-2" />
+      <TemplateGallery workspaceId={workspaceId} />
     </div>
   );
 }
