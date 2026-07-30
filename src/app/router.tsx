@@ -37,6 +37,11 @@ const StyleGuidePage = lazy(() =>
     default: m.StyleGuidePage,
   })),
 );
+const SearchPage = lazy(() =>
+  import("@/features/search/SearchPage").then((m) => ({
+    default: m.SearchPage,
+  })),
+);
 
 /**
  * Application routes. `AppShell` is the layout route wrapping every page.
@@ -71,12 +76,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "search",
-        element: (
-          <PlaceholderPage
-            title="Search"
-            description="Fuzzy search across all lessons and labs is coming soon."
-          />
-        ),
+        element: <SearchPage />,
       },
       {
         path: "labs",

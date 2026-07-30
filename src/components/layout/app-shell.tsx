@@ -7,6 +7,7 @@ import { Loader2 } from "lucide-react";
 
 import { Sidebar } from "@/components/layout/sidebar";
 import { Topbar } from "@/components/layout/topbar";
+import { CommandPalette } from "@/components/command-palette/command-palette";
 import { cn } from "@/lib/utils";
 import { useBootstrap } from "@/hooks/use-bootstrap";
 import { useUIStore } from "@/stores/ui-store";
@@ -82,6 +83,8 @@ export function AppShell() {
           </Suspense>
         </main>
       </div>
+
+      <CommandPalette />
     </div>
   );
 }
