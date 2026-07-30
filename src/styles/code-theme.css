@@ -1,0 +1,93 @@
+/*
+ * Syntax highlight theme for rehype-prism-plus output.
+ * Token colors are tuned for the app's dark-first palette and reuse a compact,
+ * legible set that reads well on the muted code surface.
+ */
+
+.reading pre code[class*="language-"],
+.reading code[class*="language-"] {
+  color: hsl(var(--foreground));
+  font-family: theme("fontFamily.mono");
+  font-size: 0.85em;
+  white-space: pre;
+}
+
+.reading pre[class*="language-"] {
+  overflow: auto;
+}
+
+/* Line numbers / highlighted lines from rehype-prism-plus */
+.reading .code-line {
+  display: block;
+}
+.reading .code-line.line-highlight,
+.reading .highlight-line {
+  background: hsl(var(--primary) / 0.1);
+  margin: 0 -1rem;
+  padding: 0 1rem;
+  border-left: 2px solid hsl(var(--primary));
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+  color: hsl(var(--muted-foreground));
+  font-style: italic;
+}
+
+.token.punctuation {
+  color: hsl(var(--muted-foreground));
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+  color: hsl(24 90% 62%);
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+  color: hsl(142 60% 55%);
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+  color: hsl(199 80% 60%);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+  color: hsl(265 80% 72%);
+}
+
+.token.function,
+.token.class-name {
+  color: hsl(210 90% 66%);
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+  color: hsl(38 92% 62%);
+}
+
+.token.important,
+.token.bold {
+  font-weight: 600;
+}
+.token.italic {
+  font-style: italic;
+}

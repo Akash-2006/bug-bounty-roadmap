@@ -24,7 +24,7 @@ export function useCurricula(workspaceId: string | undefined) {
 export function useCurriculum(id: string | undefined) {
   return useQuery({
     queryKey: queryKeys.curriculum(id ?? "none"),
-    queryFn: () => curriculumService.get(id as string),
+    queryFn: async () => (await curriculumService.get(id as string)) ?? null,
     enabled: Boolean(id),
   });
 }
