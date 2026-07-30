@@ -32,6 +32,11 @@ const LessonEditorPage = lazy(() =>
     default: m.LessonEditorPage,
   })),
 );
+const KnowledgeGraphPage = lazy(() =>
+  import("@/features/graph/KnowledgeGraphPage").then((m) => ({
+    default: m.KnowledgeGraphPage,
+  })),
+);
 const StyleGuidePage = lazy(() =>
   import("@/features/style-guide/StyleGuidePage").then((m) => ({
     default: m.StyleGuidePage,
@@ -62,6 +67,10 @@ export const router = createBrowserRouter([
       { index: true, element: <DashboardPage /> },
       { path: "curricula", element: <CurriculaPage /> },
       { path: "curricula/:curriculumId", element: <CurriculumOverviewPage /> },
+      {
+        path: "curricula/:curriculumId/graph",
+        element: <KnowledgeGraphPage />,
+      },
       {
         path: "curricula/:curriculumId/n/:nodeId",
         element: <LessonViewerPage />,

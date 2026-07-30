@@ -12,6 +12,8 @@ export type DomainEventMap = {
   "curriculum.deleted": { workspaceId: string; curriculumId: string };
   "node.created": { curriculumId: string; nodeId: string };
   "node.completed": { curriculumId: string; nodeId: string; xp: number };
+  "edge.created": { curriculumId: string; edgeId: string };
+  "edge.deleted": { curriculumId: string; edgeId: string };
 };
 
 export type DomainEventName = keyof DomainEventMap;
