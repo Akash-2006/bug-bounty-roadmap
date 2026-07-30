@@ -52,6 +52,11 @@ const SettingsPage = lazy(() =>
     default: m.SettingsPage,
   })),
 );
+const ReviewPage = lazy(() =>
+  import("@/features/review/ReviewPage").then((m) => ({
+    default: m.ReviewPage,
+  })),
+);
 
 /**
  * Application routes. `AppShell` is the layout route wrapping every page.
@@ -100,6 +105,7 @@ export const router = createBrowserRouter([
         path: "assignments",
         element: <PlaceholderPage title="Assignments" />,
       },
+      { path: "review", element: <ReviewPage /> },
       {
         path: "bookmarks",
         element: <PlaceholderPage title="Bookmarks" />,

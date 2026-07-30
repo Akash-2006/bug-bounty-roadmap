@@ -12,7 +12,9 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
+import { useDueCount } from "@/data/queries/use-flashcards";
 import { useUIStore } from "@/stores/ui-store";
+import { useWorkspaceStore } from "@/stores/workspace-store";
 
 interface SidebarProps {
   /** When true, renders in the mobile off-canvas context (always expanded). */
@@ -23,6 +25,8 @@ interface SidebarProps {
 export function Sidebar({ mobile = false, onNavigate }: SidebarProps) {
   const collapsed = useUIStore((s) => s.sidebarCollapsed) && !mobile;
   const toggleSidebar = useUIStore((s) => s.toggleSidebar);
+  const workspaceId = useWorkspaceStore((s) => s.activeWorkspaceId) ?? undefined;
+  const { data: dueCount = 0 } = useDueCount(workspaceId);
 
   return (
     <div className="flex h-full flex-col bg-card/50">
@@ -93,6 +97,13 @@ export function Sidebar({ mobile = false, onNavigate }: SidebarProps) {
                             Soon
                           </Badge>
                         )}
+                        {!collapsed &&
+                          item.to === "/review" &&
+                          dueCount > 0 && (
+                            <Badge className="h-5 min-w-5 justify-center px-1.5 text-[10px]">
+                              {dueCount}
+                            </Badge>
+                          )}
                       </>
                     )}
                   </NavLink>
