@@ -2,6 +2,7 @@ import { Menu, Search } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
+import { UserMenu } from "@/components/layout/user-menu";
 import { useUIStore } from "@/stores/ui-store";
 
 export function Topbar() {
@@ -35,6 +36,7 @@ export function Topbar() {
 
       <div className="ml-auto flex items-center gap-1">
         <ThemeToggle />
+        <UserMenu />
       </div>
     </header>
   );

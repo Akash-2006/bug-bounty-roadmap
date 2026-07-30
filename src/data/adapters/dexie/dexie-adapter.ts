@@ -1,4 +1,6 @@
 import { db } from "@/data/adapters/dexie/db";
+import { isSupabaseConfigured } from "@/lib/supabase";
+import { SupabaseAdapter } from "@/data/adapters/supabase/supabase-adapter";
 import type {
   PersistenceAdapter,
   TableName,
@@ -53,5 +55,11 @@ export class DexieAdapter implements PersistenceAdapter {
   }
 }
 
-/** App-wide adapter instance (swappable for Cloud/GitHub adapters later). */
-export const persistence: PersistenceAdapter = new DexieAdapter();
+/**
+ * The active persistence adapter. Cloud-first: when Supabase is configured the
+ * app uses it (auth gates access so queries only run when signed in);
+ * otherwise it runs fully local on IndexedDB (ADR 0002/0003).
+ */
+export const persistence: PersistenceAdapter = isSupabaseConfigured
+  ? new SupabaseAdapter()
+  : new DexieAdapter();

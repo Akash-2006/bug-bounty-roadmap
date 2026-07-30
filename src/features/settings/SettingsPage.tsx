@@ -1,5 +1,7 @@
 import { useRef, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import {
+  CloudUpload,
   Download,
   FileJson,
   Loader2,
@@ -12,10 +14,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { isSupabaseConfigured } from "@/lib/supabase";
+import { migrateLocalToCloud } from "@/data/migrate-local-to-cloud";
 import {
   useExportWorkspaceJson,
   useImportJson,
 } from "@/data/queries/use-io";
+import { useAuthStore } from "@/stores/auth-store";
 import { useThemeStore, type Theme } from "@/stores/theme-store";
 import { useWorkspaceStore } from "@/stores/workspace-store";
 
@@ -29,12 +34,39 @@ export function SettingsPage() {
   const workspaceId = useWorkspaceStore((s) => s.activeWorkspaceId) ?? undefined;
   const theme = useThemeStore((s) => s.theme);
   const setTheme = useThemeStore((s) => s.setTheme);
+  const authStatus = useAuthStore((s) => s.status);
+  const authEmail = useAuthStore((s) => s.email);
+  const qc = useQueryClient();
 
   const exportJson = useExportWorkspaceJson(workspaceId);
   const importJson = useImportJson(workspaceId);
   const fileRef = useRef<HTMLInputElement>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [migrating, setMigrating] = useState(false);
+  const [migrateMsg, setMigrateMsg] = useState<string | null>(null);
+
+  const cloudActive = isSupabaseConfigured && authStatus === "signed_in";
+
+  async function handleMigrate() {
+    setMigrating(true);
+    setMigrateMsg(null);
+    try {
+      const count = await migrateLocalToCloud();
+      await qc.invalidateQueries();
+      setMigrateMsg(
+        count > 0
+          ? `Migrated ${count} local records to your account.`
+          : "No local data found to migrate.",
+      );
+    } catch (err) {
+      setMigrateMsg(
+        err instanceof Error ? err.message : "Migration failed.",
+      );
+    } finally {
+      setMigrating(false);
+    }
+  }
 
   async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -147,6 +179,43 @@ export function SettingsPage() {
           </p>
         </CardContent>
       </Card>
+
+      {/* Cloud (only in cloud mode when signed in) */}
+      {cloudActive && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Cloud account</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Signed in as{" "}
+              <span className="font-medium text-foreground">{authEmail}</span>.
+              Your data syncs to your account.
+            </p>
+            <Button
+              variant="outline"
+              onClick={handleMigrate}
+              disabled={migrating}
+            >
+              {migrating ? (
+                <Loader2 className="animate-spin" />
+              ) : (
+                <CloudUpload />
+              )}
+              Import my local data to the cloud
+            </Button>
+            {migrateMsg && (
+              <p className="rounded-md border border-success/40 bg-success/10 px-3 py-2 text-sm text-success">
+                {migrateMsg}
+              </p>
+            )}
+            <p className="text-xs text-muted-foreground">
+              Copies curricula, lessons, progress, and everything else from this
+              browser into your account (safe to run more than once).
+            </p>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
