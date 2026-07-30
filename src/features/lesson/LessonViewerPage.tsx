@@ -25,6 +25,7 @@ import {
   useNodeProgress,
   useToggleComplete,
 } from "@/data/queries/use-progress";
+import { FlashcardsSection } from "@/features/lesson/components/flashcards-section";
 import { useWorkspaceStore } from "@/stores/workspace-store";
 
 export function LessonViewerPage() {
@@ -151,6 +152,8 @@ export function LessonViewerPage() {
               </div>
             </section>
           )}
+
+          <FlashcardsSection node={node} />
         </article>
 
         {/* Metadata rail */}

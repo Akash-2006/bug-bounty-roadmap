@@ -2,6 +2,7 @@ import type { LucideIcon } from "lucide-react";
 import {
   BookOpen,
   Bookmark,
+  Brain,
   ClipboardList,
   FlaskConical,
   LayoutDashboard,
@@ -41,6 +42,7 @@ export const navSections: NavSection[] = [
   {
     heading: "Practice",
     items: [
+      { label: "Review", to: "/review", icon: Brain },
       { label: "Labs", to: "/labs", icon: FlaskConical, upcoming: true },
       {
         label: "Assignments",

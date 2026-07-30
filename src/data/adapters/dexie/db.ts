@@ -1,6 +1,7 @@
 import Dexie, { type Table } from "dexie";
 
 import type { Curriculum } from "@/core/schemas/curriculum";
+import type { Flashcard } from "@/core/schemas/flashcard";
 import type { CurriculumEdge, CurriculumNode } from "@/core/schemas/node";
 import type { Activity, ProgressRecord } from "@/core/schemas/progress";
 import type { Workspace } from "@/core/schemas/workspace";
@@ -17,6 +18,7 @@ export class AppDatabase extends Dexie {
   edges!: Table<CurriculumEdge, string>;
   progress!: Table<ProgressRecord, string>;
   activities!: Table<Activity, string>;
+  flashcards!: Table<Flashcard, string>;
 
   constructor() {
     super("bbu-db");
@@ -33,6 +35,10 @@ export class AppDatabase extends Dexie {
       progress:
         "id, workspaceId, curriculumId, entityId, [entityType+entityId], updatedAt",
       activities: "id, workspaceId, curriculumId, entityId, type, at",
+    });
+    // v3: flashcards with spaced-repetition scheduling.
+    this.version(3).stores({
+      flashcards: "id, workspaceId, curriculumId, nodeId, dueAt, updatedAt",
     });
   }
 }
