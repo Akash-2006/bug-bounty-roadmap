@@ -62,6 +62,11 @@ const ReviewPage = lazy(() =>
     default: m.ReviewPage,
   })),
 );
+const AchievementsPage = lazy(() =>
+  import("@/features/achievements/AchievementsPage").then((m) => ({
+    default: m.AchievementsPage,
+  })),
+);
 
 /**
  * Application routes. `AppShell` is the layout route wrapping every page.
@@ -125,7 +130,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "achievements",
-        element: <PlaceholderPage title="Achievements" />,
+        element: <AchievementsPage />,
       },
       { path: "settings", element: <SettingsPage /> },
       ...(import.meta.env.DEV

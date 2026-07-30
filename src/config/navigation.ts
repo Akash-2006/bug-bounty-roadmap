@@ -57,7 +57,7 @@ export const navSections: NavSection[] = [
     items: [
       { label: "Bookmarks", to: "/bookmarks", icon: Bookmark, upcoming: true },
       { label: "Notes", to: "/notes", icon: NotebookPen, upcoming: true },
-      { label: "Achievements", to: "/achievements", icon: Trophy, upcoming: true },
+      { label: "Achievements", to: "/achievements", icon: Trophy },
       { label: "Settings", to: "/settings", icon: Settings },
     ],
   },
