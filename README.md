@@ -45,6 +45,7 @@ Built incrementally in phases, committed directly to this repository.
 
 - [x] Phase 1 — project scaffold, Tailwind/shadcn config, routing,
       application shell, responsive roadmap-tree sidebar, dashboard
+      (reviewed)
 - [ ] Phase 2 — content engine (Markdown loading + manifest generation)
 - [ ] Phase 3 — progress tracking, XP/achievements, bookmarks, notes
 - [ ] Phase 4 — search, assignment/lab trackers, statistics dashboard
