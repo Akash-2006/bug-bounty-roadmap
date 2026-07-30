@@ -42,6 +42,11 @@ const SearchPage = lazy(() =>
     default: m.SearchPage,
   })),
 );
+const SettingsPage = lazy(() =>
+  import("@/features/settings/SettingsPage").then((m) => ({
+    default: m.SettingsPage,
+  })),
+);
 
 /**
  * Application routes. `AppShell` is the layout route wrapping every page.
@@ -98,6 +103,7 @@ export const router = createBrowserRouter([
         path: "achievements",
         element: <PlaceholderPage title="Achievements" />,
       },
+      { path: "settings", element: <SettingsPage /> },
       ...(import.meta.env.DEV
         ? [{ path: "style-guide", element: <StyleGuidePage /> }]
         : []),
