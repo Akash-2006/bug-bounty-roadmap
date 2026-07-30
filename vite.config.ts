@@ -11,6 +11,8 @@ export default defineConfig({
     },
   },
   build: {
+    // The Three.js hero scene is a lazy chunk loaded only on the dashboard.
+    chunkSizeWarningLimit: 900,
     rollupOptions: {
       output: {
         manualChunks: {

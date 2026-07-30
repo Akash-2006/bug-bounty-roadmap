@@ -14,6 +14,7 @@ import { Progress } from "@/components/ui/progress";
 import { getCurriculum, getCurriculumStats } from "@/content/loader";
 import { ActivityChart } from "@/features/dashboard/components/activity-chart";
 import { CurriculumPath } from "@/features/dashboard/components/curriculum-path";
+import { Hero3D } from "@/features/dashboard/components/hero-3d";
 import { StatCard } from "@/features/dashboard/components/stat-card";
 
 const fadeUp = {
@@ -39,6 +40,8 @@ export function DashboardPage() {
         className="relative overflow-hidden rounded-2xl border bg-gradient-to-br from-accent/60 via-card to-card p-6 sm:p-8"
       >
         <div className="absolute -right-16 -top-16 size-56 rounded-full bg-primary/10 blur-3xl" />
+        {/* 3D WebGL backdrop */}
+        <Hero3D className="absolute inset-y-0 right-0 hidden h-full w-1/2 opacity-90 md:block [mask-image:linear-gradient(to_left,black_40%,transparent)]" />
         <div className="relative flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <div className="max-w-xl space-y-3">
             <div className="inline-flex items-center gap-1.5 rounded-full border bg-background/60 px-3 py-1 text-xs font-medium text-muted-foreground">
