@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   ChevronRight,
+  CircleCheck,
   FileText,
   FolderTree,
   MoreVertical,
@@ -33,6 +34,7 @@ import {
   useReorderNode,
   useUpdateNode,
 } from "@/data/queries/use-nodes";
+import { useWorkspaceProgress } from "@/data/queries/use-progress";
 import {
   NodeFormDialog,
   type NodeFormValues,
@@ -62,10 +64,17 @@ function levelLabel(scheme: HierarchyScheme, levelKey: string): string {
 
 export function NodeTree({ curriculum, workspaceId }: NodeTreeProps) {
   const { data: nodes, isLoading } = useNodes(curriculum.id);
+  const { data: progress } = useWorkspaceProgress(workspaceId);
   const create = useCreateNode(workspaceId, curriculum.id);
   const update = useUpdateNode(curriculum.id);
   const reorder = useReorderNode(curriculum.id);
   const remove = useDeleteNode(curriculum.id);
+
+  const completedIds = new Set(
+    (progress ?? [])
+      .filter((p) => p.status === "completed")
+      .map((p) => p.entityId),
+  );
 
   const [dialog, setDialog] = useState<DialogState>(null);
   const [deleteTarget, setDeleteTarget] = useState<CurriculumNode | null>(null);
@@ -159,6 +168,7 @@ export function NodeTree({ curriculum, workspaceId }: NodeTreeProps) {
               treeNode={item}
               scheme={scheme}
               curriculumId={curriculum.id}
+              completedIds={completedIds}
               siblingCount={tree.length}
               index={i}
               onAddChild={openAddChild}
@@ -233,6 +243,7 @@ interface NodeTreeItemProps {
   treeNode: ReturnType<typeof buildTree>[number];
   scheme: HierarchyScheme;
   curriculumId: string;
+  completedIds: Set<string>;
   siblingCount: number;
   index: number;
   onAddChild: (node: CurriculumNode) => void;
@@ -245,6 +256,7 @@ function NodeTreeItem({
   treeNode,
   scheme,
   curriculumId,
+  completedIds,
   siblingCount,
   index,
   onAddChild,
@@ -285,7 +297,11 @@ function NodeTreeItem({
         </button>
 
         {isLeaf ? (
-          <FileText className="size-4 shrink-0 text-muted-foreground" />
+          completedIds.has(node.id) ? (
+            <CircleCheck className="size-4 shrink-0 text-success" />
+          ) : (
+            <FileText className="size-4 shrink-0 text-muted-foreground" />
+          )
         ) : (
           <FolderTree className="size-4 shrink-0 text-muted-foreground" />
         )}
@@ -355,6 +371,7 @@ function NodeTreeItem({
               treeNode={child}
               scheme={scheme}
               curriculumId={curriculumId}
+              completedIds={completedIds}
               siblingCount={children.length}
               index={i}
               onAddChild={onAddChild}

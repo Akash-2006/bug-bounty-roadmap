@@ -1,35 +1,81 @@
 import { motion } from "framer-motion";
 import {
   BookOpen,
-  ClipboardList,
-  FlaskConical,
+  CircleCheck,
+  Flame,
+  Library,
+  Play,
   Sparkles,
+  Trophy,
   Zap,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
+import { EmptyState } from "@/components/common/empty-state";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { getCurriculum, getCurriculumStats } from "@/content/loader";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useDashboard } from "@/data/queries/use-dashboard";
 import { ActivityChart } from "@/features/dashboard/components/activity-chart";
-import { CurriculumPath } from "@/features/dashboard/components/curriculum-path";
 import { Hero3D } from "@/features/dashboard/components/hero-3d";
 import { StatCard } from "@/features/dashboard/components/stat-card";
+import { useWorkspaceStore } from "@/stores/workspace-store";
 
 const fadeUp = {
   initial: { opacity: 0, y: 12 },
   animate: { opacity: 1, y: 0 },
 };
 
-export function DashboardPage() {
-  const stats = getCurriculumStats();
-  const { semesters } = getCurriculum();
+function formatWhen(ts: number): string {
+  const diff = Date.now() - ts;
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return "just now";
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  return `${Math.floor(hrs / 24)}d ago`;
+}
 
-  // Progress tracking lands in a later phase; start everyone at zero.
-  const completed = 0;
-  const progressPct =
-    stats.lessons > 0 ? Math.round((completed / stats.lessons) * 100) : 0;
+export function DashboardPage() {
+  const workspaceId = useWorkspaceStore((s) => s.activeWorkspaceId) ?? undefined;
+  const { data, isLoading } = useDashboard(workspaceId);
+
+  if (isLoading || !data) {
+    return (
+      <div className="mx-auto w-full max-w-6xl space-y-6 px-4 py-8 sm:px-6 lg:px-8">
+        <Skeleton className="h-48 w-full rounded-2xl" />
+        <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Skeleton key={i} className="h-24 rounded-xl" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (data.curriculaCount === 0) {
+    return (
+      <div className="mx-auto w-full max-w-3xl px-4 py-16">
+        <EmptyState
+          icon={Library}
+          title="Welcome to Bug Bounty University"
+          description="Create your first curriculum to start building a structured learning path — for anything you want to master."
+          action={
+            <Button asChild>
+              <Link to="/curricula">
+                <BookOpen /> Create a curriculum
+              </Link>
+            </Button>
+          }
+        />
+      </div>
+    );
+  }
+
+  const continueHref = data.continueTarget
+    ? `/curricula/${data.continueTarget.curriculumId}/n/${data.continueTarget.node.id}`
+    : "/curricula";
 
   return (
     <div className="mx-auto w-full max-w-6xl space-y-8 px-4 py-8 sm:px-6 lg:px-8">
@@ -40,32 +86,36 @@ export function DashboardPage() {
         className="relative overflow-hidden rounded-2xl border bg-gradient-to-br from-accent/60 via-card to-card p-6 sm:p-8"
       >
         <div className="absolute -right-16 -top-16 size-56 rounded-full bg-primary/10 blur-3xl" />
-        {/* 3D WebGL backdrop */}
         <Hero3D className="absolute inset-y-0 right-0 hidden h-full w-1/2 opacity-90 md:block [mask-image:linear-gradient(to_left,black_40%,transparent)]" />
         <div className="relative flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <div className="max-w-xl space-y-3">
             <div className="inline-flex items-center gap-1.5 rounded-full border bg-background/60 px-3 py-1 text-xs font-medium text-muted-foreground">
               <Sparkles className="size-3.5 text-primary" />
-              Welcome to Bug Bounty University
+              Level {data.level.level} · {data.xp.toLocaleString()} XP
             </div>
             <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
-              Learn to hack the web, methodically.
+              {data.continueTarget
+                ? "Pick up where you left off."
+                : "You're all caught up. Nice work!"}
             </h1>
             <p className="text-muted-foreground">
-              A structured path from HTTP fundamentals to advanced exploitation —
-              reading, labs, and assignments in one place.
+              {data.continueTarget
+                ? `Next: ${data.continueTarget.node.title} · ${data.continueTarget.curriculumTitle}`
+                : "Add more lessons or start a new curriculum to keep learning."}
             </p>
             <div className="flex flex-wrap gap-3 pt-1">
               <Button asChild>
-                <Link to="/learn">
-                  <BookOpen className="size-4" />
-                  Start learning
+                <Link to={continueHref}>
+                  <Play className="size-4" />
+                  {data.continueTarget
+                    ? "Continue learning"
+                    : "Browse curricula"}
                 </Link>
               </Button>
               <Button variant="outline" asChild>
-                <Link to="/labs">
-                  <FlaskConical className="size-4" />
-                  Browse labs
+                <Link to="/curricula">
+                  <Library className="size-4" />
+                  All curricula
                 </Link>
               </Button>
             </div>
@@ -75,18 +125,34 @@ export function DashboardPage() {
             <CardHeader className="pb-2">
               <CardTitle className="flex items-center justify-between text-sm">
                 Overall progress
-                <span className="text-muted-foreground">{progressPct}%</span>
+                <span className="text-muted-foreground">
+                  {data.completionPct}%
+                </span>
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              <Progress value={progressPct} />
+              <Progress value={data.completionPct} />
               <div className="flex items-center justify-between text-xs text-muted-foreground">
                 <span>
-                  {completed} / {stats.lessons} lessons
+                  {data.completedCount} / {data.lessonCount} lessons
                 </span>
                 <span className="inline-flex items-center gap-1">
-                  <Zap className="size-3.5 text-warning" />0 XP
+                  <Flame className="size-3.5 text-warning" />
+                  {data.streak} day streak
                 </span>
+              </div>
+              <div className="space-y-1">
+                <div className="flex items-center justify-between text-[11px] text-muted-foreground">
+                  <span>Level {data.level.level}</span>
+                  <span>
+                    {data.level.xpIntoLevel}/{data.level.xpForLevel} XP
+                  </span>
+                </div>
+                <Progress
+                  value={data.level.pct}
+                  className="h-1.5"
+                  indicatorClassName="bg-warning"
+                />
               </div>
             </CardContent>
           </Card>
@@ -99,30 +165,26 @@ export function DashboardPage() {
         transition={{ duration: 0.35, delay: 0.05 }}
         className="grid grid-cols-2 gap-4 lg:grid-cols-4"
       >
+        <StatCard label="Curricula" value={data.curriculaCount} icon={Library} />
         <StatCard
-          label="Lessons"
-          value={stats.lessons}
-          icon={BookOpen}
-          hint={`${stats.modules} modules`}
-        />
-        <StatCard
-          label="Hands-on labs"
-          value={stats.labs}
-          icon={FlaskConical}
-          accentClassName="bg-primary/15 text-primary"
-        />
-        <StatCard
-          label="Assignments"
-          value={stats.assignments}
-          icon={ClipboardList}
-          accentClassName="bg-warning/15 text-warning"
-        />
-        <StatCard
-          label="XP available"
-          value={stats.totalXp.toLocaleString()}
-          icon={Zap}
+          label="Lessons completed"
+          value={`${data.completedCount}/${data.lessonCount}`}
+          icon={CircleCheck}
           accentClassName="bg-success/15 text-success"
-          hint={`~${Math.round(stats.totalMinutes / 60)}h of content`}
+        />
+        <StatCard
+          label="Day streak"
+          value={data.streak}
+          icon={Flame}
+          accentClassName="bg-warning/15 text-warning"
+          hint={`${Math.round(data.minutesInvested / 60)}h invested`}
+        />
+        <StatCard
+          label="Total XP"
+          value={data.xp.toLocaleString()}
+          icon={Zap}
+          accentClassName="bg-primary/15 text-primary"
+          hint={`Level ${data.level.level}`}
         />
       </motion.section>
 
@@ -138,13 +200,61 @@ export function DashboardPage() {
               Your learning path
             </h2>
             <Button variant="ghost" size="sm" asChild>
-              <Link to="/learn">View all</Link>
+              <Link to="/curricula">View all</Link>
             </Button>
           </div>
-          <CurriculumPath semesters={semesters} />
+          <div className="space-y-3">
+            {data.perCurriculum.map(
+              ({ curriculum, lessonCount, completedCount, pct }) => (
+                <Link key={curriculum.id} to={`/curricula/${curriculum.id}`}>
+                  <Card className="transition-colors hover:border-primary/40">
+                    <CardContent className="space-y-2 p-4">
+                      <div className="flex items-center justify-between gap-3">
+                        <span className="truncate font-medium">
+                          {curriculum.title}
+                        </span>
+                        <span className="shrink-0 text-xs text-muted-foreground">
+                          {completedCount}/{lessonCount} · {pct}%
+                        </span>
+                      </div>
+                      <Progress value={pct} />
+                    </CardContent>
+                  </Card>
+                </Link>
+              ),
+            )}
+          </div>
         </div>
-        <div className="lg:col-span-1">
-          <ActivityChart />
+
+        <div className="space-y-6 lg:col-span-1">
+          <ActivityChart data={data.weekly} />
+
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Trophy className="size-4 text-warning" /> Recent activity
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {data.recent.length === 0 ? (
+                <p className="text-sm text-muted-foreground">
+                  Complete a lesson to see it here.
+                </p>
+              ) : (
+                <ul className="space-y-2">
+                  {data.recent.map((r) => (
+                    <li key={r.id} className="flex items-center gap-2 text-sm">
+                      <CircleCheck className="size-4 shrink-0 text-success" />
+                      <span className="min-w-0 flex-1 truncate">{r.title}</span>
+                      <span className="shrink-0 text-xs text-muted-foreground">
+                        {formatWhen(r.at)}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </CardContent>
+          </Card>
         </div>
       </motion.section>
     </div>
