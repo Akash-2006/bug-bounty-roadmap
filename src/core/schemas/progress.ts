@@ -3,7 +3,7 @@ import { z } from "zod";
 import { baseEntitySchema } from "@/core/schemas/base";
 
 /** What kind of entity a progress/activity record points at. */
-export const entityTypeSchema = z.enum(["node"]);
+export const entityTypeSchema = z.enum(["node", "assignment"]);
 export type EntityType = z.infer<typeof entityTypeSchema>;
 
 export const progressStatusSchema = z.enum([
@@ -33,6 +33,7 @@ export const activityTypeSchema = z.enum([
   "node.completed",
   "node.uncompleted",
   "quiz.passed",
+  "assignment.done",
 ]);
 export type ActivityType = z.infer<typeof activityTypeSchema>;
 

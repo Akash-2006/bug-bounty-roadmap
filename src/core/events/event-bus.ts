@@ -18,6 +18,7 @@ export type DomainEventMap = {
     xp: number;
     score: number;
   };
+  "assignment.done": { curriculumId: string; assignmentId: string; xp: number };
   "edge.created": { curriculumId: string; edgeId: string };
   "edge.deleted": { curriculumId: string; edgeId: string };
 };

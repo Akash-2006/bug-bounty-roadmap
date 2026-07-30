@@ -1,6 +1,7 @@
 import Dexie, { type Table } from "dexie";
 
 import type { Curriculum } from "@/core/schemas/curriculum";
+import type { Assignment } from "@/core/schemas/assignment";
 import type { Bookmark, Note } from "@/core/schemas/annotations";
 import type { Flashcard } from "@/core/schemas/flashcard";
 import type { CurriculumEdge, CurriculumNode } from "@/core/schemas/node";
@@ -24,6 +25,7 @@ export class AppDatabase extends Dexie {
   quizQuestions!: Table<QuizQuestion, string>;
   bookmarks!: Table<Bookmark, string>;
   notes!: Table<Note, string>;
+  assignments!: Table<Assignment, string>;
 
   constructor() {
     super("bbu-db");
@@ -54,6 +56,11 @@ export class AppDatabase extends Dexie {
     this.version(5).stores({
       bookmarks: "id, workspaceId, curriculumId, nodeId, updatedAt",
       notes: "id, workspaceId, curriculumId, nodeId, updatedAt",
+    });
+    // v6: assignments / task tracker.
+    this.version(6).stores({
+      assignments:
+        "id, workspaceId, curriculumId, nodeId, status, order, updatedAt",
     });
   }
 }
