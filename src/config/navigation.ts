@@ -43,13 +43,12 @@ export const navSections: NavSection[] = [
     heading: "Practice",
     items: [
       { label: "Review", to: "/review", icon: Brain },
-      { label: "Labs", to: "/labs", icon: FlaskConical, upcoming: true },
       {
         label: "Assignments",
         to: "/assignments",
         icon: ClipboardList,
-        upcoming: true,
       },
+      { label: "Labs", to: "/labs", icon: FlaskConical, upcoming: true },
     ],
   },
   {

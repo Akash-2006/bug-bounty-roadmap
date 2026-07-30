@@ -33,6 +33,7 @@ import {
 import { FlashcardsSection } from "@/features/lesson/components/flashcards-section";
 import { NoteCard } from "@/features/lesson/components/note-card";
 import { QuizSection } from "@/features/lesson/components/quiz-section";
+import { AssignmentsSection } from "@/features/lesson/components/assignments-section";
 import { useWorkspaceStore } from "@/stores/workspace-store";
 
 export function LessonViewerPage() {
@@ -174,6 +175,8 @@ export function LessonViewerPage() {
           )}
 
           <QuizSection node={node} />
+
+          <AssignmentsSection node={node} />
 
           <FlashcardsSection node={node} />
         </article>

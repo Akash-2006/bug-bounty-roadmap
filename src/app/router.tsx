@@ -77,6 +77,11 @@ const NotesPage = lazy(() =>
     default: m.NotesPage,
   })),
 );
+const AssignmentsPage = lazy(() =>
+  import("@/features/assignments/AssignmentsPage").then((m) => ({
+    default: m.AssignmentsPage,
+  })),
+);
 
 /**
  * Application routes. `AppShell` is the layout route wrapping every page.
@@ -127,7 +132,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "assignments",
-        element: <PlaceholderPage title="Assignments" />,
+        element: <AssignmentsPage />,
       },
       { path: "review", element: <ReviewPage /> },
       {
