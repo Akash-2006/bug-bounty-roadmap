@@ -17,6 +17,15 @@ export function useNodes(curriculumId: string | undefined) {
   });
 }
 
+/** A single node by id. */
+export function useNode(id: string | undefined) {
+  return useQuery({
+    queryKey: ["node", id ?? "none"],
+    queryFn: async () => (await nodeService.get(id as string)) ?? null,
+    enabled: Boolean(id),
+  });
+}
+
 export function useCreateNode(
   workspaceId: string | undefined,
   curriculumId: string | undefined,
@@ -34,7 +43,12 @@ export function useUpdateNode(curriculumId: string | undefined) {
   return useMutation({
     mutationFn: ({ id, patch }: { id: string; patch: UpdateNodeInput }) =>
       nodeService.update(id, patch),
-    onSuccess: () => invalidate(qc, curriculumId),
+    onSuccess: (updated) => {
+      invalidate(qc, curriculumId);
+      if (updated) {
+        void qc.invalidateQueries({ queryKey: ["node", updated.id] });
+      }
+    },
   });
 }
 

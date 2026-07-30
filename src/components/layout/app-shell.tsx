@@ -1,7 +1,9 @@
 import { useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
+import { Suspense } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { AnimatePresence, motion } from "framer-motion";
+import { Loader2 } from "lucide-react";
 
 import { Sidebar } from "@/components/layout/sidebar";
 import { Topbar } from "@/components/layout/topbar";
@@ -69,7 +71,15 @@ export function AppShell() {
       <div className="flex min-w-0 flex-1 flex-col">
         <Topbar />
         <main className="flex-1">
-          <Outlet />
+          <Suspense
+            fallback={
+              <div className="flex h-[60vh] items-center justify-center">
+                <Loader2 className="size-6 animate-spin text-muted-foreground" />
+              </div>
+            }
+          >
+            <Outlet />
+          </Suspense>
         </main>
       </div>
     </div>

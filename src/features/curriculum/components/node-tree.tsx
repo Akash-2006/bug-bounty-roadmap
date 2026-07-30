@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import {
   ChevronRight,
   FileText,
@@ -157,6 +158,7 @@ export function NodeTree({ curriculum, workspaceId }: NodeTreeProps) {
               key={item.node.id}
               treeNode={item}
               scheme={scheme}
+              curriculumId={curriculum.id}
               siblingCount={tree.length}
               index={i}
               onAddChild={openAddChild}
@@ -230,6 +232,7 @@ export function NodeTree({ curriculum, workspaceId }: NodeTreeProps) {
 interface NodeTreeItemProps {
   treeNode: ReturnType<typeof buildTree>[number];
   scheme: HierarchyScheme;
+  curriculumId: string;
   siblingCount: number;
   index: number;
   onAddChild: (node: CurriculumNode) => void;
@@ -241,6 +244,7 @@ interface NodeTreeItemProps {
 function NodeTreeItem({
   treeNode,
   scheme,
+  curriculumId,
   siblingCount,
   index,
   onAddChild,
@@ -286,9 +290,12 @@ function NodeTreeItem({
           <FolderTree className="size-4 shrink-0 text-muted-foreground" />
         )}
 
-        <span className="min-w-0 flex-1 truncate text-sm font-medium">
+        <Link
+          to={`/curricula/${curriculumId}/n/${node.id}`}
+          className="min-w-0 flex-1 truncate text-sm font-medium hover:text-primary hover:underline"
+        >
           {node.title}
-        </span>
+        </Link>
 
         <Badge
           variant="outline"
@@ -347,6 +354,7 @@ function NodeTreeItem({
               key={child.node.id}
               treeNode={child}
               scheme={scheme}
+              curriculumId={curriculumId}
               siblingCount={children.length}
               index={i}
               onAddChild={onAddChild}
