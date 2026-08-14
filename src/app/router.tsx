@@ -82,6 +82,11 @@ const AssignmentsPage = lazy(() =>
     default: m.AssignmentsPage,
   })),
 );
+const ExplorePage = lazy(() =>
+  import("@/features/explore/ExplorePage").then((m) => ({
+    default: m.ExplorePage,
+  })),
+);
 
 /**
  * Application routes. `AppShell` is the layout route wrapping every page.
@@ -97,6 +102,7 @@ export const router = createBrowserRouter([
       { index: true, element: <DashboardPage /> },
       { path: "curricula", element: <CurriculaPage /> },
       { path: "curricula/:curriculumId", element: <CurriculumOverviewPage /> },
+      { path: "explore", element: <ExplorePage /> },
       {
         path: "curricula/:curriculumId/graph",
         element: <KnowledgeGraphPage />,
