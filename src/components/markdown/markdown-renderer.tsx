@@ -1,7 +1,10 @@
 import { memo, type ComponentPropsWithoutRef } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
 import rehypePrismPlus from "rehype-prism-plus";
+import "katex/dist/katex.min.css";
 
 import { MermaidDiagram } from "@/components/markdown/mermaid-diagram";
 import { cn } from "@/lib/utils";
@@ -51,8 +54,8 @@ export const MarkdownRenderer = memo(function MarkdownRenderer({
   return (
     <div className={cn("reading", className)}>
       <ReactMarkdown
-        remarkPlugins={[remarkGfm]}
-        rehypePlugins={[[rehypePrismPlus, { ignoreMissing: true }]]}
+        remarkPlugins={[remarkGfm, remarkMath]}
+        rehypePlugins={[rehypeKatex, [rehypePrismPlus, { ignoreMissing: true }]]}
         components={{
           code({ inline, className: cls, children, node, ...props }: CodeProps) {
             const match = /language-(\w+)/.exec(cls ?? "");
